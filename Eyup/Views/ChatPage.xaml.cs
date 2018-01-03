@@ -53,5 +53,15 @@ namespace Eyup.Views
         {
             AvatarTapped?.Invoke(this, new AppContactEventArgs(AppContact));
         }
+
+        public void SetChatText(string s)
+        {
+            ChatTextBox.Text = s;
+        }
+        public void AddChat(string s)
+        {
+            AppContact.ChatHistory.Add(s);
+
+        }
     }
 }

@@ -20,6 +20,8 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Eyup.Services;
 using Windows.ApplicationModel.Contacts;
+using Windows.Foundation.Metadata;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace Eyup
 {
@@ -159,9 +161,55 @@ namespace Eyup
             }
         }
 
-        protected override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        protected async override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
         {
-            
+            if (!_isContactsInitialized)
+            {
+                await InitializeAllAsync();
+            }
+
+            bool isPeopleShare = false;
+            if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 5))
+            {
+                // Make sure the current OS version includes the My People feature before
+                // accessing the ShareOperation.Contacts property
+                isPeopleShare = (args.ShareOperation.Contacts.Count > 0);
+            }
+
+            if (isPeopleShare)
+            {
+                // Show share UI for MyPeople contact(s)
+
+                Frame rootFrame = CreateRootFrame();
+                AppContact selectedAppContact = (from c in App.AppContacts where c.ContactId == "1" select c).FirstOrDefault();
+                rootFrame.Navigate(typeof(AppContactPanelShell));
+
+                rootFrame.Navigate(typeof(ChatPage), selectedAppContact);
+
+                if (args.ShareOperation.Data.Contains(StandardDataFormats.WebLink))
+                {
+                    try
+                    {
+                        Uri sharedWebLink = await args.ShareOperation.Data.GetWebLinkAsync();
+                        ((ChatPage)rootFrame.Content).AddChat(args.ShareOperation.Data.Properties.Title);
+                        ((ChatPage)rootFrame.Content).AddChat(sharedWebLink.AbsoluteUri);
+
+                    }
+                    catch
+                    {
+                        
+                    }
+
+                }
+
+                
+                //AppContact.ChatHistory.Add(ChatTextBox.Text);
+            }
+            else
+            {
+                // Show standard share UI for unpinned contacts
+            }
+
         }
 
         /// <summary>

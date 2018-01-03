@@ -81,14 +81,14 @@ namespace Eyup
         {
             if (!string.IsNullOrEmpty(navigationParameter?.ContactRemoteIds))
             {
-                var selectedAppContact = (from c in App.AppContacts where c.ContactId == navigationParameter.ContactRemoteIds select c).FirstOrDefault();
-                ContactsPage.SelectedAppContact = selectedAppContact;
+                    var selectedAppContact = (from c in App.AppContacts where c.ContactId == navigationParameter.ContactRemoteIds select c).FirstOrDefault();
+                    ContactsPage.SelectedAppContact = selectedAppContact;
 
-                switch (navigationParameter?.Scheme)
-                {
-                    case "ms-ipmessaging":
-                        {
-                            AppFrame.Navigate(typeof(ChatPage), selectedAppContact);
+                    switch (navigationParameter?.Scheme)
+                    {
+                        case "ms-ipmessaging":
+                            {
+                                AppFrame.Navigate(typeof(ChatPage), selectedAppContact);
                         }
                         break;
                     case "ms-contact-profile":
